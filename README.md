@@ -3,5 +3,6 @@ a general-purpose highly-automated pipeline for flow related processes in (embed
 
 ## Getting started
 
-[Click here](www.gibboncode.org)
-![Tetrahedral mesh](https://www.gibboncode.org/img/bunnyMesh.gif)
+[Click here](https://www.gibboncode.org) 
+
+![Tetrahedral mesh](https://www.gibboncode.org/img/bunnyMesh.gif) 
