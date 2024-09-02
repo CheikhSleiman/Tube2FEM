@@ -19,8 +19,7 @@ Tube2FEM is developed by:
 
 Licence
 -------
-turtleFSI is licensed under the GNU GPL, version 3 or (at your option) any
-later version. turtleFSI is Copyright (2016-2019) by the authors.
+
 
 Documentation
 -------------
@@ -36,27 +35,14 @@ Installation
 
 
 
-Use
----
-Run turtleFSI with all the default parameters::
-   ``turtleFSI``
-
-See all the command line parameters run the following command::
-  ``turtleFSI -h``
-
-Run a specific problem file::
-  ``turtleFSI --problem [path_to_problem]``
-
-When calling a specific problem file, turtleFSI will first look for the file name locally, then check if the file name is present in the directory "/turtleFSI/problems/".
-Please refere to the [documentation](https://turtlefsi2.readthedocs.io/en/latest/) to learn how to define a new problem file and for a more complete description of usage.
 
 
 Contact
 -------
 The latest version of this software can be obtained from
 
-  https://github.com/KVSlab/turtleFSI
+  https://github.com/CheikhSleiman/Tube2FEM
 
 Please report bugs and other issues through the issue tracker at:
 
-  https://github.com/KVSlab/turtleFSI/issues
+  https://github.com/CheikhSleiman/Tube2FEM/issues
