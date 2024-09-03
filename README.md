@@ -1,5 +1,8 @@
 # Tube2FEM - (Embedded) Tubular Objects Simulations using the Finite Element Method
 Tube2FEM is a general-purpose highly-automated pipeline for flow related processes in (embedded) tubular objects. 
+The pipeline leverages a range of open-source software and libraries, notably [GIBBON](https://www.gibboncode.org), [FEniCS](https://fenicsproject.org/), and [Paraview](https://www.paraview.org/), to provide
+flexibility and broad applicability across different simulation scenarios, ranging from biomedical to industrial
+applications.
 
 ## Getting started
 
