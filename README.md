@@ -1,4 +1,14 @@
 # Tube2FEM - (Embedded) Tubular Objects Simulations using the Finite Element Method
+
+<p align="center">
+    <img src="figs/LiverNetwork.gif" width="288" height="200" alt="turtleFSI_swim"/>
+</p>
+<p align="center">
+   the classical Turek benchmark (FSI2).
+</p>
+
+Description
+-----------
 Tube2FEM is a general-purpose highly-automated pipeline for flow related processes in (embedded) tubular objects. 
 Addressing a critical gap in computational fluid dynamics (CFD) and simulation sciences, it facilitates the transition from raw three-dimensional imaging, graph networks, or Computer Aided Design (CAD) models of tubular objects to refined, simulation-ready meshes.
 The pipeline leverages a range of open-source software and libraries, notably [GIBBON](https://www.gibboncode.org), [FEniCS](https://fenicsproject.org/), and [Paraview](https://www.paraview.org/), to provide
