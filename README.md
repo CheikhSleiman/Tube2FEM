@@ -1,5 +1,5 @@
-# Tube2FEM - 
-Tube2FEM is a general-purpose highly-automated pipeline for flow related processes in (embedded) tubular objects
+# Tube2FEM - (Embedded) Tubular Objects Simulations using the Finite Element Method
+Tube2FEM is a general-purpose highly-automated pipeline for flow related processes in (embedded) tubular objects. 
 
 ## Getting started
 
