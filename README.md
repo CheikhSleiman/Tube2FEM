@@ -1,4 +1,4 @@
-# Tube2FEM - (Embedded) Tubular Objects Simulations using the Finite Element Method
+# Tube2FEM - Tubular Objects FEM Simulations
 
 <p align="center">
     <img src="figs/LiverNetwork.gif" width="288" height="200" alt="turtleFSI_swim"/>
