@@ -32,7 +32,7 @@ Documentation
 -------------
 For an introduction to Tube2FEM, and tutorials, please refer to the [documentation](https://readthedocs.org/).
 
-If you wish to use Tube2FEM for journal publications, please refer to the [JOSS publication](https://www.biorxiv.org/content/10.1101/2024.06.22.600203v1):
+If you wish to use Tube2FEM for journal publications, please refer to the [bioRxiv preprint](https://www.biorxiv.org/content/10.1101/2024.06.22.600203v1):
 
 Cheikh Sleiman et al., (2024). Tube2FEM: a general-purpose highly-automated pipeline for flow related processes in (embedded) tubular objects. Journal of ... https://...
 
