@@ -49,12 +49,7 @@ Installation
 Tube2FEM uses multiple Python packages and MATLAB libraries (see Figure below)
 
 ![PDF Preview](figs/InteroperabilityDarkMode.jpg)
-
-
-
-
-
-Tube2FEM packages/libraries interoperability.
+## Tube2FEM packages/libraries interoperability.
 
 
 
