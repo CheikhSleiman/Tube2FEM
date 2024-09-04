@@ -50,7 +50,7 @@ Tube2FEM uses multiple Python packages and MATLAB libraries (see Figure below)
 
 ![PDF Preview](figs/InteroperabilityDarkMode.jpg)
 
-<img src="figs/InteroperabilityDarkMode.jpg" alt="PDF Preview" width="500" height="300"/>
+<img src="figs/InteroperabilityDarkMode.jpg" alt="PDF Preview" width="1963" height="2974"/>
 
 
 
