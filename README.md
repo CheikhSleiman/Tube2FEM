@@ -1,11 +1,9 @@
 # Tube2FEM - Tubular Objects FEM Simulations
 
-<p align="center">
-    <img src="figs/LiverNetwork.gif" width="288" height="200" alt="turtleFSI_swim"/>
-</p>
-<p align="center">
-   the classical Turek benchmark (FSI2).
-</p>
+
+Getting started
+---------------
+
 
 Description
 -----------
@@ -15,13 +13,8 @@ The pipeline leverages a range of open-source software and libraries, notably [G
 flexibility and broad applicability across different simulation scenarios, ranging from biomedical to industrial
 applications.
 
-## Getting started
 
-[Click here](https://www.gibboncode.org) 
 
-![Tetrahedral mesh](https://www.gibboncode.org/img/bunnyMesh.gif) 
-
-The image doesn't work
 
 
 Authors
@@ -50,8 +43,6 @@ Tube2FEM uses multiple Python packages and MATLAB libraries (see Figure below)
 
 ![PDF Preview](figs/InteroperabilityDarkMode.jpg)
 <div align="center">Tube2FEM packages/libraries interoperability.</div>
-
-
 
 
 
