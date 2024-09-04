@@ -47,9 +47,9 @@ Cheikh Sleiman et al., (2024). Tube2FEM: Tube2FEM: a general-purpose highly-auto
 Installation
 ------------
 Tube2FEM uses multiple Python packages and MATLAB libraries (see Figure below)
-
-![PDF Preview](figs/InteroperabilityDarkMode.jpg)
 ## Tube2FEM packages/libraries interoperability.
+![PDF Preview](figs/InteroperabilityDarkMode.jpg)
+
 
 
 
