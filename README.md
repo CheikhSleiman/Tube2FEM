@@ -29,7 +29,7 @@ Licence
 
 Documentation
 -------------
-For an introduction to Tube2FEM, and tutorials, please refer to the [documentation](https://readthedocs.org/).
+For an introduction to Tube2FEM, and tutorials, please refer to the [documentation](https://readthedocs.org/)
 
 If you wish to use Tube2FEM for journal publications, please refer to the [bioRxiv preprint](https://www.biorxiv.org/content/10.1101/2024.06.22.600203v1)
 
