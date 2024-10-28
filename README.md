@@ -14,7 +14,36 @@ flexibility and broad applicability across different simulation scenarios, rangi
 
 
 
+Repository Structure
 
+```
+Tube2FEM
++-- Problem
+¦   +-- Input
+¦   ¦   +---- Graph
+¦   ¦	+---- CT
+¦   ¦
+¦   +-- Mesh
+¦   ¦   +---- surfaceMesh
+¦   ¦	+---- volumeMesh 
+¦   ¦
+¦   +-- FiniteElement
+¦   ¦   +---- CFD
+¦   ¦	+---- 3D-1D
+¦   ¦   +---- AdvectionDiffusionReaction
+¦   ¦
+¦   +-- Postprocessing
+¦   ¦   +---- ParaView
+¦   ¦   +---- Animations
+¦   ¦   +---- Figures
+¦   ¦   +---- simOutput
+¦   ¦
+¦   +-- Main.m
+¦
++-- README.md (this file)
++-- LICENSE.md
++-- .gitignore
+```
 
 Authors
 -------
