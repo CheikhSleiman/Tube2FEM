@@ -1,4 +1,4 @@
-# Tube2FEM - Tubular Objects FEM Simulations
+﻿# Tube2FEM - Tubular Objects FEM Simulations
 
 
 Getting started
@@ -14,35 +14,34 @@ flexibility and broad applicability across different simulation scenarios, rangi
 
 
 
-Repository Structure
-
+## Repository Structure
 ```
 Tube2FEM
-+-- Problem
-�   +-- Input
-�   �   +---- Graph
-�   �	+---- CT
-�   �
-�   +-- Mesh
-�   �   +---- surfaceMesh
-�   �	+---- volumeMesh 
-�   �
-�   +-- FiniteElement
-�   �   +---- CFD
-�   �	+---- 3D-1D
-�   �   +---- AdvectionDiffusionReaction
-�   �
-�   +-- Postprocessing
-�   �   +---- ParaView
-�   �   +---- Animations
-�   �   +---- Figures
-�   �   +---- simOutput
-�   �
-�   +-- Main.m
-�
-+-- README.md (this file)
-+-- LICENSE.md
-+-- .gitignore
+├── Problem
+│   ├── Input
+│   │   ├──── Graph
+│   │	└──── CT
+│   │
+│   ├── Mesh
+│   │   ├──── surfaceMesh
+│   │	└──── volumeMesh 
+│   │
+│   ├── FiniteElement
+│   │   ├──── CFD
+│   │	├──── 3D-1D
+│   │   └──── AdvectionDiffusionReaction
+│   │
+│   ├── Postprocessing
+│   │   ├──── ParaView
+│   │   ├──── Animations
+│   │   ├──── Figures
+│   │   └──── simOutput
+│   │
+│   └── Main.m
+│
+├── README.md (this file)
+├── LICENSE.md
+└── .gitignore
 ```
 
 Authors
