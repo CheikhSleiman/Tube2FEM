@@ -20,8 +20,13 @@ for i = 1:size(data,1)
     data(i,11) = data(i,11)+30;
 end
 
-% Plot the vessels & sample each segment depending on its radius 
-% Sampling in this way is for optimisation
+
+% Change very small radii to 5 micons minimum value (to avoid heavy remeshing)
+radii=data(:,5);
+radii(radii<=6)=6;
+data(:,5)=radii;
+
+% Plot the vessels 
 
 cFigure
 for i = 1:size(data,1)
@@ -33,6 +38,7 @@ for i = 1:size(data,1)
      endNodeCoor1 = [data(i,10) data(i,11) data(i,12)];
      line([startNodeCoor1(1) endNodeCoor1(1)],[startNodeCoor1(2) endNodeCoor1(2)],[startNodeCoor1(3) endNodeCoor1(3)])     
      hold on
+% Sample each segment depending on its radius for optimisation purposes
     if barRadius1 < 18
         n = round(barLength1/5); 
     else
@@ -50,7 +56,6 @@ axis off
 hold on
 
 %% Detect Edge Nodes
-
 % Detect edge nodes 
 [EdgeInput,EdgeInputCoor,labelCount] = EdgeInputDetection(data);
 % Detect edge output nodes
@@ -289,7 +294,7 @@ patch('faces',F,'vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',0.2,'EdgeC
 axisGeom
 
 %% Remesh open surface mesh
-nb_pts = size(V,1);
+nb_pts = 25000; % going below 25000 nodes will remove a vessel
 optionStruct2.nb_pts = nb_pts;
 [F,V] = ggremesh(F,V,optionStruct2);
 cFigure;
