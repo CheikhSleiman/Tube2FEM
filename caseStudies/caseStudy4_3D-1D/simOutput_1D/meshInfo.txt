@@ -1,0 +1,2 @@
+meshPath="../../../../../../../../../../../../../../../../../mnt/c/Users/homeuser/Documents/GitHub/Tube2FEM/caseStudies/caseStudy4_3D-1D/Mesh"
+GmshFileName="""""Secomb3D1DGmshFormat.msh"""""
