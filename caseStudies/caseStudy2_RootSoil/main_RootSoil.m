@@ -36,7 +36,7 @@ view([138,14])
 %% Remesh
 optionStruct1.nb_pts= 100000;
 [Frr,Vrr]=ggremesh(Frs,Vrs,optionStruct1);
-Vrr = Vrr*0.0002;
+Vrr = Vrr*0.0002/0.9;
 cFigure;
 gpatch(Frr,Vrr,'y','k')
 axisGeom;
@@ -139,7 +139,7 @@ C(size(Cbox(:),1)+1:size(C,1)) = 6*ones((size(C,1)-size(Cbox,1)),1)+Cnet;
 % [V_region1]=getInnerPoint({Fbox,Fnet},{Vbox,Vnet});
 [V_region1] = [0.03 0.01 0.03];
 % [V_region2]=getInnerPoint(Fnet,Vnet);
-[V_region2] = [0.04 0.04 0.15];
+[V_region2] = [0.042 0.04 0.148];
 % [V_region2] = [V_region2; [475e-6 288e-6 180e-6]];
 
 V_regions= [V_region1;V_region2];
@@ -173,10 +173,10 @@ Fb=meshOutput.facesBoundary; %The boundary faces
 Cb=meshOutput.boundaryMarker; %The boundary markers
 
 for i=1:size(meshOutput.elementMaterialID,1)
-    if meshOutput.elementMaterialID(i)==1
-        meshOutput.elementMaterialID(i) = 2;
-    elseif meshOutput.elementMaterialID(i)==-2
+    if meshOutput.elementMaterialID(i)==-2
         meshOutput.elementMaterialID(i) = 1;
+    elseif meshOutput.elementMaterialID(i)==-3
+        meshOutput.elementMaterialID(i) = 2;
     end
 end
 
