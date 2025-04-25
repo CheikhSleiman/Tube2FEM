@@ -2,17 +2,30 @@ clear
 clc
 close all force
 
-%% Adding path to Tube2FEM core directory
+%% Adding Tube2FEM src directories to path
 CurrentFolder = pwd;
 TopFolder = fileparts(pwd);
 TopTopFolder = fileparts(fileparts(pwd));
-coreFolder = strcat(TopTopFolder,'\core');
-addpath(coreFolder);
+srcFolder = strcat(TopTopFolder,'\src');
+finiteElementFolder = strcat(srcFolder,'\FiniteElement');
+boundaryConditionsFolder = strcat(srcFolder,'\boundaryConditions');
+postprocessingParaViewFolder = strcat(srcFolder,'\postprocessingParaView');
+surfaceMeshProcessingFolder = strcat(srcFolder,'\surfaceMeshProcessing');
+volumetricMeshFolder = strcat(srcFolder,'\volumetricMesh');
+skeletonisationFolder = strcat(srcFolder,'\skeletonisation');
 
-%% Read Data from Input Excel file
+addpath(srcFolder);
+addpath(finiteElementFolder);
+addpath(boundaryConditionsFolder);
+addpath(postprocessingParaViewFolder);
+addpath(surfaceMeshProcessingFolder);
+addpath(volumetricMeshFolder);
+addpath(skeletonisationFolder);
+
+%% Read graph data from input Excel file
 [data,txt] = xlsread('Input/SecombRatTum98.xlsx');
 
-% Shifting the graph to + (x,y,z) space 
+% Shifting the graph in the (x,y) space 
 for i = 1:size(data,1)
     data(i,7) = data(i,7)+30;
     data(i,8) = data(i,8)+30;
@@ -20,14 +33,12 @@ for i = 1:size(data,1)
     data(i,11) = data(i,11)+30;
 end
 
-
-% Change very small radii to 5 micons minimum value (to avoid heavy remeshing)
+% Change very small radii to 5 micons minimum value (avoid heavy remeshing)
 radii=data(:,5);
 radii(radii<=6)=6;
 data(:,5)=radii;
 
-% Plot the vessels 
-
+% Plot the network graph
 cFigure
 for i = 1:size(data,1)
      startNode1 = data(i,3);
@@ -36,7 +47,9 @@ for i = 1:size(data,1)
      barLength1 = data(i,6);
      startNodeCoor1 = [data(i,7) data(i,8) data(i,9)];
      endNodeCoor1 = [data(i,10) data(i,11) data(i,12)];
-     line([startNodeCoor1(1) endNodeCoor1(1)],[startNodeCoor1(2) endNodeCoor1(2)],[startNodeCoor1(3) endNodeCoor1(3)])     
+     line([startNodeCoor1(1) endNodeCoor1(1)], ...
+         [startNodeCoor1(2) endNodeCoor1(2)], ...
+         [startNodeCoor1(3) endNodeCoor1(3)])     
      hold on
 % Sample each segment depending on its radius for optimisation purposes
     if barRadius1 < 18
@@ -49,9 +62,10 @@ for i = 1:size(data,1)
      VN_all(1:n,3*i-2:3*i) = V; 
      plotV(V,'r.-','lineWidth',3); 
 end
-    
+
 view([-45,45])
 axisGeom
+zoom(1.3)
 axis off
 hold on
 
@@ -99,9 +113,11 @@ barRadii = barRadii.^2;
 cFigure; 
 gpatch(E,V_Skel,'none',sqrt(barRadii),0,3);
 axisGeom;
+zoom(1.3)
+axis off
 drawnow; 
 
-%% Create Binary Image
+%% Create Binary Image from Graph
 binaryNetwork = binaryImageFromGraph(data); 
 v= volshow(binaryNetwork);
 
@@ -111,8 +127,8 @@ se = strel('sphere', 3);
 
 % Perform a dilation on the 3D image (1 dilation is enough)
 dilatedImage = imdilate(binaryNetwork, se);
-v2 = volshow(dilatedImage)
-
+pause(2)
+%v2 = volshow(dilatedImage);
 
 %% Get centroids of the white voxels in the dilated Image
 stats = regionprops3(dilatedImage, 'Centroid', 'VoxelIdxList');
@@ -134,6 +150,7 @@ V_grid=[X(:) Y(:) Z(:)];
 
 indVec = stats.VoxelIdxList{255,1};
 
+% Get Distance between Voxel Centroids and Nodes on Graph
 [M_Dilated,ind_Dilated]=minDistMod(V_Dilated,V_Skel);
 
 M_grid = nan*zeros(size(V_grid,1),1); 
@@ -143,12 +160,12 @@ indMin(indVec) = ind_Dilated;
 
 M_grid=M_grid./barRadii(indMin);
 M=reshape(M_grid,size(X));
+
+% Visualisation
 vizStruct.colormap=warmcold(250);
 vizStruct.clim=[0 contourLevel*2];
 sv3(fliplr(M),voxelSize,vizStruct); 
 camlight headlight; 
-axis off
-set(gca,'Color','w')
 
 %% Save M for visualization in Paraview
 cd Input
@@ -179,6 +196,8 @@ outputPath = strrep(outputPath, '\', '/');
 pyrunfile("save3DTiff.py",inputPath=inputPath, outputPath=outputPath)
 
 %% Levelset to Isosurface + Remeshing + Smoothing
+
+% Extract Isosurface from levelset (distance map) + Clean Patch
 imOrigin=min(V_Dilated,[],1)-voxelSize/2;
 controlPar_isosurface.nSub=[1 1 1];%round(max(v)/2./v);
 controlPar_isosurface.capOpt=1; %Option to cap open ended surfaces
@@ -194,7 +213,7 @@ Vi=Vi(:,[2 1 3]);
 [Fi,Vi]=triSurfRemoveThreeConnect(Fi,Vi);
 [Fi,Vi]=patchCleanUnused(Fi,Vi);
 
-% Remeshing using geogram
+% Remeshing using Geogram
 optionStructGG.pointSpacing= pointSpacing*6;
 [Fi,Vi]=ggremesh(Fi,Vi,optionStructGG);
 
@@ -209,7 +228,7 @@ controlPar_smooth.RigidConstraints=unique(Eb(:));
 [Vi]=patchSmooth(Fi,Vi,[],controlPar_smooth);
 Eb=patchBoundary(Fi,Vi);
 
-
+% Visualisation
 cFigure; 
 gpatch(Fi,Vi,'w','k',0.2);
 axisGeom;
@@ -218,6 +237,8 @@ drawnow;
 hold on
 gpatch(E,V_Skel,'none',sqrt(barRadii),0,3);
 drawnow
+zoom(1.3)
+axis off
 
 %% Exporting STL from Patch data
 cd Mesh
@@ -242,14 +263,16 @@ index = find(flag);
 cFigure
 
 for i =1:size(EdgePtCoor,1)
-    i
+    
+    i;
     indexi = index(i);
     C=[]; 
     snapTolerance=mean(patchEdgeLengths(F,V))/100;
-    Pin=[EdgePtCoor(indexi,6),EdgePtCoor(indexi,7),EdgePtCoor(indexi,8)]; %Point on plane
+    Pin=[EdgePtCoor(indexi,6),EdgePtCoor(indexi,7),EdgePtCoor(indexi,8)]; 
     Pi = [EdgePtCoor(indexi,3),EdgePtCoor(indexi,4),EdgePtCoor(indexi,5)];
     n= Pin - Pi;
-
+    % Extract the Surface Mesh Faces and Vertices that are inside 
+    % a 4*radius Sphere having its center (Pi)
     [D]=minDist(V,Pi); 
     radius = EdgePtCoor(indexi,9);
     logicDist=D<4*radius;
@@ -259,8 +282,10 @@ for i =1:size(EdgePtCoor,1)
 
     hold on
     axisGeom
-    scatter3(Pi(1),Pi(2),Pi(3),'MarkerEdgeColor','k','MarkerFaceColor',[1. 1. 1.])
-    scatter3(Pin(1),Pin(2),Pin(3),'MarkerEdgeColor','k','MarkerFaceColor',[1. 0. 0.])
+    scatter3(Pi(1),Pi(2),Pi(3),'MarkerEdgeColor','k', ...
+        'MarkerFaceColor',[1. 1. 1.])
+    scatter3(Pin(1),Pin(2),Pin(3),'MarkerEdgeColor','k', ...
+        'MarkerFaceColor',[1. 0. 0.])
 
     % Check if Fa is composed of multiple disconnected surfaces
     a=(120/180)*pi;
@@ -273,16 +298,16 @@ for i =1:size(EdgePtCoor,1)
             for k = 1:sizeUniqueG
                 count(k) = sum(G==uniqueG(k));
             end
-        maxCount = index(count == max(count))
+        maxCount = index(count == max(count));
         Fb = [Fb;Fa(G~=maxCount,:)];
         Fa = Fa(G==maxCount,:);        
     end
 
-    % Cutting
+    % Slicing - Slicing plane is defined by point (Pcut) and a Normal (n)
     Pcut = 0*Pin + 1*Pi;
     [Fa,Va,~,logicSide]=triSurfSlice(Fa,V,C,Pcut,n,snapTolerance);
     
-    % Attaching the processed surface back to the main lung surface mesh   
+    % Attaching the Processed Surface back to the Main Network Mesh   
     [Fa,Va]=patchCleanUnused(Fa(~logicSide,:),Va);    
     [F1,V1]=joinElementSets({Fa,Fb},{Va,V});
     [F,V]=mergeVertices(F1,V1);
@@ -290,26 +315,33 @@ end
 
 
 C = ones(size(F,1),1);
-patch('faces',F,'vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',0.2,'EdgeColor','none');
+patch('faces',F,'vertices',V,'FaceColor','flat','CData',C, ...
+    'FaceAlpha',0.2,'EdgeColor','none');
 axisGeom
+axis off
+zoom(1.3) 
 
 %% Remesh open surface mesh
-nb_pts = 25000; % going below 25000 nodes will remove a vessel
+nb_pts = 25000; % going below 25000 nodes will remove a vessel (Careful)
 optionStruct2.nb_pts = nb_pts;
 [F,V] = ggremesh(F,V,optionStruct2);
 cFigure;
 gpatch(F,V,'w','k');
 axisGeom;
 axis off
-
+zoom(1.3)
 
 %% Close the hole and labelling
+
 cFigure
 C = ones(size(F,1),1);
 [F,V,C]=closeHolesAndLabelling(F,V,C);
-patch('faces',F,'vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',0.2,'EdgeColor','none');
+patch('faces',F,'vertices',V,'FaceColor','flat','CData',C, ...
+    'FaceAlpha',0.2,'EdgeColor','none');
 axisGeom
 gpatch(E,V_Skel,'none',sqrt(barRadii),0,3);
+axis off
+zoom(1.3)
 
 %% Volumetric Meshing using TetGen
 
@@ -327,7 +359,7 @@ inputStruct.Nodes=V; %Nodes of boundary
 inputStruct.faceBoundaryMarker=C; 
 inputStruct.regionPoints=V_regions; %Interior points for regions
 inputStruct.holePoints=V_holes; %Interior points for holes
-inputStruct.regionA=regionTetVolumes; %Desired tetrahedral volume for each region
+inputStruct.regionA=regionTetVolumes; %Desired tet volume for each region
 inputStruct.modelName = modelName;
 
 % Run TetGen
@@ -346,7 +378,7 @@ hold on;
 % Creating single-domain volumetric mesh
 meshOutput.elementMaterialID = ones(size(meshOutput.elementMaterialID,1),1);
 
-% Visualizing using |meshView|
+% Visualizing using meshView
 optionStruct.hFig=[hf];
 optionStruct.hFig.WindowState = "maximized"; 
 meshView(meshOutput,optionStruct);
@@ -356,6 +388,7 @@ axisGeom(gca,fontSize);
 gdrawnow;
 axis off
 camlight('left')
+zoom(1.3)
 % print(gcf,'SecombVolumetricMesh.png','-dpng','-r600');
 
 %% Write version 2 ASCII .msh mesh format 
@@ -369,6 +402,7 @@ meshPath = strrep(meshPath, '\', '/');
 pathParts = strsplit(meshPath, '/');
 % Reconstruct the path without the first directory
 newMeshPath = strjoin(pathParts(2:end), '/'); 
+% Get WSL path
 rootPath = "../../../../../../../../../../../../../../../../../mnt/c/";
 wslMeshPath = strcat(rootPath,newMeshPath,"/meshioConvertMesh.py");
 wslMeshPath= sprintf('"%s"', wslMeshPath);
@@ -381,8 +415,10 @@ GmshFileName= sprintf('"%s"', GmshFileName);
 fprintf(fid1,strcat('GmshFileName=',GmshFileName));
 fclose(fid1);
 
+% Create a script combining meshInfo.txt 
+% and the general ConvertGmshToXdmf.py from src 
 script1 = fileread('meshInfo.txt');
-script2 = fileread('../../../core/ConvertGmshToXdmf.py');
+script2 = fileread('../../../src/volumetricMesh/ConvertGmshToXdmf.py');
 
 fid2 = fopen('meshioConvertMesh.py','wt');
 fprintf(fid2,script1);
@@ -391,6 +427,7 @@ fprintf(fid2,script2);
 fprintf(fid2,'\n');
 fclose(fid2);
 
+% Run Python on WSL
 wslPath = '"C:\Windows\System32\wsl.exe"';
 runString = strcat(wslPath,' python3',append(' ',wslMeshPath));
 [runStatus,runOut]=system(runString,'-echo');
