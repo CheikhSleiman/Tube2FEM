@@ -2,36 +2,52 @@ clear
 close all
 clc
 
-%% Adding path to Tube2FEM core directory
+%%  Adding Tube2FEM src directories to path
 CurrentFolder = pwd;
 TopFolder = fileparts(pwd);
 TopTopFolder = fileparts(fileparts(pwd));
-coreFolder = strcat(TopTopFolder,'\core');
 FEFolder = strcat(CurrentFolder,'\FiniteElement');
-addpath(coreFolder);
+srcFolder = strcat(TopTopFolder,'\src');
+finiteElementFolder = strcat(srcFolder,'\FiniteElement');
+boundaryConditionsFolder = strcat(srcFolder,'\boundaryConditions');
+postprocessingParaViewFolder = strcat(srcFolder,'\postprocessingParaView');
+surfaceMeshProcessingFolder = strcat(srcFolder,'\surfaceMeshProcessing');
+volumetricMeshFolder = strcat(srcFolder,'\volumetricMesh');
+skeletonisationFolder = strcat(srcFolder,'\skeletonisation');
 
-%% Import .stl
+addpath(srcFolder);
+addpath(finiteElementFolder);
+addpath(boundaryConditionsFolder);
+addpath(postprocessingParaViewFolder);
+addpath(surfaceMeshProcessingFolder);
+addpath(volumetricMeshFolder);
+addpath(skeletonisationFolder);
+
+%% Import Synthetic network (.stl format)
 [stlStruct] = import_STL('Input\syntheticNetwork.stl');
 F=stlStruct.solidFaces{1}; %Faces
 V=stlStruct.solidVertices{1}; %Vertices
 [Fsurf,Vsurf]=mergeVertices(F,V); % Merging nodes
 
+% Visualisation
 cFigure;
 gpatch(Fsurf,Vsurf,'w','k');
 axisGeom;
 axis off
+zoom(1.3)
 
 %% Remeshing using Geogram
-optionStruct1.nb_pts= 10000;
+optionStruct1.nb_pts= 10000; % number of nodes in the remesh surface mesh
 [Fsurf,Vsurf]=ggremesh(Fsurf,Vsurf,optionStruct1);
 
+% Visualisation
 cFigure;
 gpatch(Fsurf,Vsurf,'w','k');
 axisGeom;
 axis off
+zoom(1.3)
 
-
-%% plot Skeleton
+%% Plot Centerline Skeleton (saved in Centreline folder)
 cFigure
 [data,txt] = xlsread('Centreline\centrelineSyntheticNetwork.csv');
 
@@ -45,9 +61,11 @@ for i = 1:m
      barLength1 = data(i,6);
      startNodeCoor1 = [data(i,7) data(i,8) data(i,9)];
      endNodeCoor1 = [data(i,10) data(i,11) data(i,12)];
-     line([startNodeCoor1(1) endNodeCoor1(1)],[startNodeCoor1(2) endNodeCoor1(2)],[startNodeCoor1(3) endNodeCoor1(3)])     
+     line([startNodeCoor1(1) endNodeCoor1(1)], ...
+         [startNodeCoor1(2) endNodeCoor1(2)], ...
+         [startNodeCoor1(3) endNodeCoor1(3)])     
      hold on
-     n=2;
+     n=2; % Each segment is formed of 2 nodes
      V = [startNodeCoor1;endNodeCoor1];
      V =evenlySampleCurve(V,n,'linear',0);
      VN_all(1:n,3*i-2:3*i) = V; 
@@ -55,12 +73,14 @@ for i = 1:m
 
 end
 
+% Visualisation
 axisGeom;
 hold on
 axis off 
+zoom(1.3)
 
-%% Detect Edge nodes
-% Detect Edge nodes
+%% Detect Edge nodes of the centreline
+
 % Detect edge input nodes
 [EdgeInput,EdgeInputCoor,labelCount] = EdgeInputDetection(data);
 % Detect edge output nodes
@@ -68,14 +88,17 @@ axis off
 EdgePtCoor = [EdgeInputCoor ; EdgeOutputCoor];
 EdgePtCoor = EdgePtCoor([1,10,11,13,14],:);
 EdgePtCoor(2:5,10) = [3;4;5;6];
-% plot
+
+% Visualisation
 for i=1:size(EdgePtCoor,1)
-    scatter3(EdgePtCoor(i,6),EdgePtCoor(i,7), EdgePtCoor(i,8),'MarkerEdgeColor','k',...
-            'MarkerFaceColor',[1. 1. 1.])
+    scatter3(EdgePtCoor(i,6),EdgePtCoor(i,7), EdgePtCoor(i,8), ...
+        'MarkerEdgeColor','k','MarkerFaceColor',[1. 1. 1.]);
     hold on
 end
 
-%% Build Skeleton with radii
+%% Build Skeleton with 1D radii field (a radius is assigned for each segment)
+
+% Define Vertices and Elements Cell Arrays
 CellArray_V = cell(1,m);
 CellArray_E = cell(1,m);
 
@@ -88,19 +111,23 @@ for i = 1:m
     CellArray_E{1,i} = E;
 end
 
+% Join Element Sets (to avoid duplications)
 [E,Vske]=joinElementSets(CellArray_E,CellArray_V);
 [E,Vske,ind1]=mergeVertices(E,Vske);
 barRadii=barRadii(ind1);
 
+% Visualisation
 cFigure; 
 gpatch(E,Vske,'none',barRadii,0,3);
 axisGeom;
 hold on
 axis off
 Csurf = 0.5*ones(size(Fsurf,1),1);
-patch('faces',Fsurf,'vertices',Vsurf,'FaceColor','flat','CData',Csurf,'FaceAlpha',0.1,'EdgeColor','none');
+patch('faces',Fsurf,'vertices',Vsurf,'FaceColor','flat','CData',Csurf, ...
+    'FaceAlpha',0.1,'EdgeColor','none');
 
-%% Slicing
+%% Slicing the surface mesh to define boundary conditions
+
 F = Fsurf;
 V = Vsurf;
 dirVec = zeros(size(EdgePtCoor,1),3);
@@ -114,7 +141,7 @@ for i =1:size(EdgePtCoor,1)
     indexi = index(i);
     C=[]; 
     snapTolerance=mean(patchEdgeLengths(F,V))/100;
-    Pin=[EdgePtCoor(indexi,6),EdgePtCoor(indexi,7),EdgePtCoor(indexi,8)]; %Point on plane
+    Pin=[EdgePtCoor(indexi,6),EdgePtCoor(indexi,7),EdgePtCoor(indexi,8)]; 
     Pi = [EdgePtCoor(indexi,3),EdgePtCoor(indexi,4),EdgePtCoor(indexi,5)];
     n= Pin - Pi;
 
@@ -133,8 +160,10 @@ for i =1:size(EdgePtCoor,1)
 
     hold on
     axisGeom
-    % scatter3(Pi(1),Pi(2),Pi(3),'MarkerEdgeColor','k','MarkerFaceColor',[1. 1. 1.])
-    % scatter3(Pin(1),Pin(2),Pin(3),'MarkerEdgeColor','k','MarkerFaceColor',[1. 0. 0.])
+    % scatter3(Pi(1),Pi(2),Pi(3),'MarkerEdgeColor','k', ...
+    %     'MarkerFaceColor',[1. 1. 1.])
+    % scatter3(Pin(1),Pin(2),Pin(3),'MarkerEdgeColor','k', ...
+    %     'MarkerFaceColor',[1. 0. 0.])
 
     % Check if Fa is composed of multiple disconnected surfaces
     a=(120/180)*pi;
@@ -152,11 +181,12 @@ for i =1:size(EdgePtCoor,1)
         Fa = Fa(G==maxCount,:);        
     end
 
-    % Cutting
+    % Slicing
     Pcut = 0*Pin + 1*Pi;
     [Fa,Va,~,logicSide]=triSurfSlice(Fa,V,C,Pcut,n,snapTolerance);
     
-    % Attaching the processed surface back to the main lung surface mesh   
+    % Attaching the processed surface back to the main synthetic
+    % network surface mesh   
     [Fa,Va]=patchCleanUnused(Fa(~logicSide,:),Va);    
     [F1,V1]=joinElementSets({Fa,Fb},{Va,V});
     [F,V]=mergeVertices(F1,V1);
@@ -169,15 +199,17 @@ ind = find(GC==max(GC));
 indval = GR(ind);
 F = F(G==indval,:);
 
+% Visualisation
 C = 0.5*ones(size(F,1),1);
-patch('faces',F,'vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',0.2,'EdgeColor','none');
+patch('faces',F,'vertices',V,'FaceColor','flat','CData',C, ...
+    'FaceAlpha',0.2,'EdgeColor','none');
 axisGeom
 hold on
 gpatch(E,Vske,'none',barRadii,0,3);
 axis off
 
 
-%% Remesh open surface
+%% Remesh open surface of the sliced surface mesh
 nb_pts = size(V,1);
 optionStruct2.nb_pts = nb_pts;
 [F,V] = ggremesh(F,V,optionStruct2);
@@ -193,13 +225,16 @@ Fc = F;
 Vc = V;
 [Fc,Vc,Cc]=closeHolesAndLabelling(Fc,Vc,Cc);
 
+% Visualisation
 logicRegion1=ismember(Cc,1);
 logicRegion2=ismember(Cc,2:max(Cc)); 
 V_region2=getInnerPoint(Fc(logicRegion2,:),Vc);
 cFigure;
-patch('faces',Fc(logicRegion1,:),'vertices',Vc,'FaceColor','flat','CData',Cc(logicRegion1),'FaceAlpha',1,'EdgeColor','none');
+patch('faces',Fc(logicRegion1,:),'vertices',Vc,'FaceColor','flat', ...
+    'CData',Cc(logicRegion1),'FaceAlpha',1,'EdgeColor','none');
 hold on;
-patch('faces',Fc(logicRegion2,:),'vertices',Vc,'FaceColor','flat','CData',Cc(logicRegion2),'FaceAlpha',1,'EdgeColor','none');
+patch('faces',Fc(logicRegion2,:),'vertices',Vc,'FaceColor','flat', ...
+    'CData',Cc(logicRegion2),'FaceAlpha',1,'EdgeColor','none');
 axisGeom
 axis off
 
@@ -218,7 +253,7 @@ inputStruct.Nodes=Vc; %Nodes of boundary
 inputStruct.faceBoundaryMarker=Cc; 
 inputStruct.regionPoints=V_regions; %Interior points for regions
 inputStruct.holePoints=V_holes; %Interior points for holes
-inputStruct.regionA=regionTetVolumes; %Desired tetrahedral volume for each region
+inputStruct.regionA=regionTetVolumes; %Desired tet volume for each region
 inputStruct.modelName = modelName;
 
 % Mesh model using tetrahedral elements using tetGen 
@@ -231,7 +266,7 @@ CE=meshOutput.elementMaterialID; %Element material or region id
 Fb=meshOutput.facesBoundary; %The boundary faces
 Cb=meshOutput.boundaryMarker; %The boundary markers
 
-% Visualization
+% Visualisation
 faceAlpha1 = 0.8;
 markerSize = 1.5;
 lineWidth=3;
@@ -243,7 +278,7 @@ hold on;
 % Creating single-domain volumetric mesh
 meshOutput.elementMaterialID = ones(size(meshOutput.elementMaterialID,1),1);
 
-% Visualizing using |meshView|
+% Visualisation using meshView
 optionStruct.hFig=[hf];
 optionStruct.hFig.WindowState = "maximized"; 
 optionStruct.edgeColor='k';
@@ -259,7 +294,7 @@ camlight('right')
 colorbar off
 axis off
 
-%% Convert Unit
+%% Convert Units
 meshOutput.nodes = meshOutput.nodes*0.01;
 
 %% Convert to (.msh) Gmsh Format (Version 2 ASCII)
@@ -286,7 +321,7 @@ fprintf(fid1,strcat('GmshFileName=',GmshFileName));
 fclose(fid1);
 
 script1 = fileread('meshInfo.txt');
-script2 = fileread('../../../core/ConvertGmshToXdmf.py');
+script2 = fileread('../../../src/volumetricMesh/ConvertGmshToXdmf.py');
 
 fid2 = fopen('meshioConvertMesh.py','wt');
 fprintf(fid2,script1);
@@ -336,7 +371,7 @@ newFEPath = strjoin(pathParts(2:end), '/');
 % ------ Root Path ---------%
 rootPath = "../../../../../../../../../../../../../../../../../mnt/c/";
 
-% ------ WSL FE Path -------%
+% ------ WSL FE Path -------% 
 wslFEPath = strcat(rootPath,newFEPath,"/finalNavierStokes.py");
 wslFEPath= sprintf('"%s"', wslFEPath);
 
@@ -347,7 +382,8 @@ meshPath2 = sprintf('"%s"', strcat(rootPath,newMeshPath,"/Tri.xdmf"));
 fileName = sprintf('''%s''',strcat(rootPath,newOutPath,"/velocity.pvd"));
 fileName1 = sprintf('''%s''',strcat(rootPath,newOutPath,"/pressure.pvd"));
 fileName2 = sprintf('''%s''',strcat(rootPath,newOutPath,"/wss.pvd"));
-timeSeriesFileName = sprintf('''%s''',strcat(rootPath,newOutPath,"/velocity_series"));
+timeSeriesFileName = sprintf('''%s''',strcat(rootPath,newOutPath, ...
+    "/velocity_series"));
 
 fprintf(fid1,strcat('tetraFileName=',meshPath1));
 fprintf(fid1,'\n');
@@ -376,9 +412,11 @@ fclose(fid2);
 
 
 % Run Navier-Stokes in the case Study directory
-wslPath = '"C:\Windows\System32\wsl.exe"';
-runString = strcat(wslPath,' python3',append(' ',wslFEPath));
-[runStatus,runOut]=system(runString,'-echo');
+% Uncomment to run the FEniCS script on WSL
+
+% wslPath = '"C:\Windows\System32\wsl.exe"';
+% runString = strcat(wslPath,' python3',append(' ',wslFEPath));
+% [runStatus,runOut]=system(runString,'-echo');
 
 
 %% PostProcessing
@@ -404,7 +442,8 @@ fclose(fid1);
 script1 = fileread('postprocessingPathes.txt');
 script2 = fileread('macroParaviewNavierStokes.py');
 
-% Join postprocessingPathes.txt with macroParaviewNavierStokes.py file in the FiniteElement directory
+% Join postprocessingPathes.txt with macroParaviewNavierStokes.py file
+% in the FiniteElement directory
 fid2 = fopen('macroNavierStokes.py','wt');
 fprintf(fid2,script1);
 fprintf(fid2,'\n');
@@ -412,16 +451,16 @@ fprintf(fid2,script2);
 fprintf(fid2,'\n');
 fclose(fid2);
 
-
+% Change according to the User ParaView Directory!  
 paraviewPath = '"C:\Users\homeuser\Downloads\ParaView-5.10.1-Windows-Python3.9-msvc2017-AMD64\bin\pvbatch.exe"';
 
 % ParaView macro path
 macroPath = strcat(CurrentFolder,'\Postprocessing\macroNavierStokes.py');
 macroPath= sprintf('"%s"', macroPath);
 
+% Run ParaView Macro using |pvbatch| 
 runString = strcat(paraviewPath,append(' ',macroPath));
 [runStatus,runOut]=system(runString,'-echo');
-
 
 %% Read .mp4 file generated by ParaView Macro (CFD)
 cFigure;
@@ -435,5 +474,4 @@ while(hasFrame(vidObj))
     title(sprintf("Current Time = %.2f sec",timeStep))
     pause(10/vidObj.FrameRate)
 end
-
 
