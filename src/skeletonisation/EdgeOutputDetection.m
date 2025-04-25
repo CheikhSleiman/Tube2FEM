@@ -26,8 +26,8 @@ for i =1:m
     onEdgeOutputCoor(i,8)=data(i,9);  %same branch z
     onEdgeOutputCoor(i,9)= data(i,5)/2;%radius
     onEdgeOutputCoor(i,10)=labelCount;
-    scatter3(data(i,10),data(i,11), data(i,12),'MarkerEdgeColor','k',...
-        'MarkerFaceColor',[1. 1. 1.])
+    % scatter3(data(i,10),data(i,11), data(i,12),'MarkerEdgeColor','k',...
+    %     'MarkerFaceColor',[1. 1. 1.])
     hold on
     end
 end

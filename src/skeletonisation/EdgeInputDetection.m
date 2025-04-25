@@ -28,8 +28,8 @@ for i =1:m
     onEdgeInputCoor(i,8)=data(i,12);% same branch node z
     onEdgeInputCoor(i,9)= data(i,5)/2;%radius
     onEdgeInputCoor(i,10)= labelCount;
-    scatter3(data(i,7),data(i,8), data(i,9),'MarkerEdgeColor','k',...
-        'MarkerFaceColor',[1. 1. 1.])
+    % scatter3(data(i,7),data(i,8), data(i,9),'MarkerEdgeColor','k',...
+    %     'MarkerFaceColor',[1. 1. 1.])
     hold on
     end
 end

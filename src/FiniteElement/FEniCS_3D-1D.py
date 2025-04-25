@@ -30,7 +30,7 @@ with open(file_path, 'r') as file:
 BC_values = content.split('\\n')
 # Convert strings to float
 BC_values = [float(value) for value in BC_values]
-print(BC_values)
+#print(BC_values)
 
 
 # Read the content of the BC_points.txt
@@ -43,7 +43,7 @@ with open(file_path, 'r') as file:
 BC_points = content.split('\\n')
 # Convert strings to tuple
 BC_points = [tuple(map(float, s.split())) for s in BC_points]
-print(BC_points)
+#print(BC_points)
 
 
 bcs = []
@@ -51,7 +51,7 @@ for i, (bc_pt, bc_val) in enumerate(zip(BC_points, BC_values)):
     bc_i = CompiledSubDomain(f'near(x[0], {bc_pt[0]}, tol) && near(x[1], {bc_pt[1]}, tol)',
                              tol=1E-10)
     bcs.append(DirichletBC(V, bc_val, bc_i, method="pointwise"))
-    print(f'{round(i / len(BC_points) * 100, 2):6.2f}%%')
+    #print(f'{round(i / len(BC_points) * 100, 2):6.2f}%%')
 
 
 

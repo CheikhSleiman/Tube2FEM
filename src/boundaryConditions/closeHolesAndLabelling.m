@@ -3,7 +3,7 @@ Ec=patchBoundary(Fc,Vc);
 
 optionStruct.outputType='label';
 G=tesgroup(Ec,optionStruct);
-i=0
+i=0;
 while 1
     
     Ec=patchBoundary(Fc,Vc);
@@ -54,7 +54,7 @@ while 1
     % join element set
     [Fc,Vc,Cc]=joinElementSets({Fc,Fsi},{Vc,Vsi},{Cc,Csi+max(Cc(:))});
     [Fc,Vc]=mergeVertices(Fc,Vc);
-    i=i+1
+    i=i+1;
     if max(G)==1
         break
     end
