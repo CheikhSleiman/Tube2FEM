@@ -1,4 +1,25 @@
 function [onEdgeOutput,onEdgeOutputCoor] = onEdgeOutputDetection(data,labelCount)
+% onEdgeOutputDetection detects all input edges in a tree (skeleton or synthetic)
+% represented by a data matric
+%
+%  [onEdgeOutput,onEdgeOutputCoor,labelCount] = onEdgeOutputDetection(data)
+%  reads 'data' which is the Tree save in 'Secomb' format and compute the
+%  the input edge node index 'onEdgeOutput', its coordinates and other data
+% 'onEdgeOutputCoor'  and gives each a label 'labelCount'.
+%
+%
+%   INPUTS:
+%       data - matrix, tree in Secomb format 
+%
+%   OUTPUT:
+%       onEdgeOutput - column vector, input edge node index
+%       onEdgeOutputCoor - matrix, input edge nodes coordinate
+%       labelCount - column vector, input edge node label
+%       
+%
+% -----------------------------------------------------------------------%
+% Check if node index in endNode vector is not repeated in endNode vector
+% Check the count for all nodes in endNode
 
 m = size(data,1);
 for i=1:m
@@ -13,6 +34,8 @@ for i=1:m
      onEdgeOutput(i) = count;
 end
 
+% Create onEdgeOutputCoor [mx10] that contains data from Secomb data (radius, length, index)
+% + coordinate of the edge nodes and that of the connected to it.
 for i =1:m
     if onEdgeOutput(i) == 0 && numel(find(data(:,4)==data(i,4)))==1
     labelCount = labelCount+1;
@@ -31,6 +54,7 @@ for i =1:m
     hold on
     end
 end
+% if count not equal zero (not edge) remove from matrix
 ind = find(sum(onEdgeOutputCoor,2)==0) ;
 onEdgeOutputCoor(ind,:) = [] ;
 end

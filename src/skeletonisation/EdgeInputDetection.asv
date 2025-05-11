@@ -4,8 +4,8 @@ function [onEdgeInput,onEdgeInputCoor,labelCount] = onEdgeInputDetection(data)
 %
 %  [onEdgeInput,onEdgeInputCoor,labelCount] = onEdgeInputDetection(data)
 %  reads 'data' which is the Tree save in 'Secomb' format and compute the
-%  the input edge node index 'onEdgeInput', its coordinates and other data
-% 'onEdgeInputCoor'  and gives each a label 'labelCount'.
+%  the input edge node index 'onEdgeInput', its coordinates 'onEdgeInputCoor'
+%  and gives each a label 'labelCount'.
 %
 %
 %   INPUTS:
@@ -33,8 +33,6 @@ for i=1:m
      onEdgeInput(i) = count;
 end
 
-% Create onEdgeInputCoor [mx10] that contains data from Secomb data (radius, length, index)
-% + coordinate of the edge nodes and that of the connected to it.
 labelCount = 1;
 for i =1:m
     if onEdgeInput(i) == 0 && numel(find(data(:,3)==data(i,3)))==1
@@ -54,9 +52,10 @@ for i =1:m
     hold on
     end
 end
-% if count not equal zero (not edge) remove from matrix
 ind = find(sum(onEdgeInputCoor,2)==0) ;
 onEdgeInputCoor(ind,:) = [] ;
+
+
 
 
 end
