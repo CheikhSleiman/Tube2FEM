@@ -45,7 +45,7 @@ fid1 = fopen('BC.txt','wt');
 fprintf(fid1,'u_in = Expression(''-0.025*t'', degree = 1, t=0)\n\n');
 % Write the outlet pressure expression
 fprintf(fid1,'p_out = Expression(''0*t'', degree = 1, t=0)\n\n');
-% Loop over all outlets and assign p_out for all its labels
+% Loop over all outlets and assig
 for i =1:max(labelledSurfs)
     if i ~= indu && i ~= indWall
         fprintf(fid1, 'bcp_outflow%d = DirichletBC(Q, p_out, surf_markers, %d)\n',i,i); 
@@ -53,15 +53,12 @@ for i =1:max(labelledSurfs)
 end
 
 fprintf(fid1, '\n');
-% Assign null velocity for walls
 fprintf(fid1, 'bcu_walls     = DirichletBC(V, Constant((0, 0, 0)),surf_markers, %d)\n',indWall);
-% Assign u_in at the normal direction to the inlet surface
 fprintf(fid1, 'bcu_inflow1    = DirichletBC(V.sub(%d), u_in , surf_markers, %d)',ind1-1,indu);
 fprintf(fid1, '\n');
 fprintf(fid1, '%s','bcu = [bcu_walls,bcu_inflow1]');
 fprintf(fid1, '\n');
 
-% Write the velocity bcu and pressure bcp vector that assembles everything
 indAll = 1:max(labelledSurfs);
 induAll = [indu, indWall];
 flag = ~ismember(indAll,induAll);
@@ -76,7 +73,6 @@ for i =1:max(labelledSurfs)
     end
 end
 fprintf(fid1, ']');
-% Close the text file!
 fclose(fid1);
 
 fprintf('BCs are written correctly in BC.txt \n');
