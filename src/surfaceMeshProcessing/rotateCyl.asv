@@ -23,9 +23,7 @@ function hm = rotateCyl(hm,lineVec,lineVecXYperp,startNodeCoor,ThetaXInDegrees,T
 %       
 %
 % -----------------------------------------------------------------------%
-% Matlab seems to be inconsistant in the way it computes angles in 3D, I didn't
-% find a generic way of computing angles in all the 8 quadrants and for 
-% special cases so I finally computed it in the way below (& verified it case by case)
+
 
 
 

@@ -1,5 +1,9 @@
 function [D]=distNDMod(V1,V2)
 
+% Changed distND GIBBON function to avoid sqrt which are computationally
+% expensive (used square distances instead). More efficient for very large
+% trees
+
 D=zeros(size(V1,1),size(V2,1));
 
 for q=1:1:size(V1,2) %For all dimensions

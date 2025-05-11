@@ -1,5 +1,8 @@
 function v_perp = find_perp(v_input)
-%FIND_PERP Finds one of the infinitely number of perpendicular vectors of
+% Useful function found on matlab file exchange!
+
+
+%   FIND_PERP Finds one of the infinitely number of perpendicular vectors of
 %   the input. The input vector v_input is a size 3,1 or 3,1 vector (only
 %   3-dim supported)
     

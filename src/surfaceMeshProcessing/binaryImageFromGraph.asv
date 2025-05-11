@@ -27,15 +27,15 @@ maxX = 50*(ceil(max(data(:,7))/50.)+1);
 maxY = 50*(ceil(max(data(:,8))/50.)+1);
 maxZ = 50*(ceil(max(data(:,9))/50.)+1);
 
-% Define the 3D image size
+% Define the 
 ImBinary = zeros(maxX,maxY,maxZ);
-% Define the pixelSize
 pixelSize = 1;
 x = [0:pixelSize:size(ImBinary,1)];
 y = [0:pixelSize:size(ImBinary,2)];
 z = [0:pixelSize:size(ImBinary,3)];
 
-% Loop over each segment from the graph
+
+
 for i = 1:size(data,1)
      startNode = data(i,3);
      endNode  = data(i,4);
@@ -45,12 +45,11 @@ for i = 1:size(data,1)
      endNodeCoor = [data(i,10) data(i,11) data(i,12)];
      line([startNodeCoor(1) endNodeCoor(1)],[startNodeCoor(2) endNodeCoor(2)],[startNodeCoor(3) endNodeCoor(3)])     
 
-     
+
      lineVec = endNodeCoor - startNodeCoor;
      quiver3(startNodeCoor(1),startNodeCoor(2),startNodeCoor(3),lineVec(1),lineVec(2),lineVec(3),'k','LineWidth',(20*barRadius/100),'ShowArrowHead','off')
      hold on
      grid on
-     % projection of the segment on the XY and XZ planes
      lineVecXY = [lineVec(1) lineVec(2) 0];
      lineVecXZ = [lineVec(1) 0 lineVec(3)];
 
@@ -97,12 +96,12 @@ kmin = max(kmin);
 kmax = find(z > round(zmax,2)+pixelSize);
 kmax = min(kmax);
       
-% point in cylinder: dist(P,cylinderAxis)<R + dist(Q,centerOfCylAxis)<barLength/2, Q being the projection of P on CylAxis
+% % point in cylinder: dist(P,cylinderAxis)<R + dist(Q,centerOfCylAxis)<barLength/2, Q being the projection of P on CylAxis --- Validation in PointInCyliner.m file
 m1 = cross(startNodeCoor,endNodeCoor);
 midPt = (startNodeCoor+endNodeCoor)/2;
 
 threshRadius = 1;
-% Change voxel value from 0 to 255 if inside cylinder
+
 for i =imin:imax
     for j =jmin:jmax
         for k = kmin:kmax
@@ -123,7 +122,6 @@ end
 
 end
 
-% Plot
 set(gca,'xdir','reverse','zdir','reverse')
 xlim([0 maxX])
 ylim([0 maxY])
@@ -184,7 +182,6 @@ for i = 1:size(data,1)
       kmax = find(z > round(zmax,2)+pixelSize);
       kmax = min(kmax);
       
-      %Change voxel value from 0 to 255 if inside sphere
         for i =imin:imax
             for j =jmin:jmax
                 for k = kmin:kmax

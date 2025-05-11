@@ -1,4 +1,6 @@
 function varargout=minDistMod(varargin)
+% Modified the GIBBON minDist function to avoid the use of sqrt. This is
+% more efficient computationally for very large graphs.
 
 % function [D1,minIND]=minDist(V1,V2,maxVarSize,selfAvoid,numFreeBytes)
 % -----------------------------------------------------------------------
