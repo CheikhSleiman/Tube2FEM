@@ -1,4 +1,17 @@
+"""
+    Generates a 3D-1D mixed-dimension simulation example
 
+    Parameters:
+    -----------
+    input_file : mesh file path 'tetraFileName'
+        a tetrahedral mesh file (.xdmf)
+
+    Returns:
+    --------
+    .vtk file  
+        Simulation output in .vtk format
+
+    """
 from fenics import *
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,8 +30,6 @@ surf_markers = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 V = FunctionSpace(mesh, 'P', 1)
 u = Function(V)
 
-# plot(mesh)
-# plt.show()
 
 # Read the content of the BC_values.txt
 file_path = BCvalues

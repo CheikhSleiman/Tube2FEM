@@ -1,3 +1,19 @@
+"""
+    Generates a .xdmf mesh format from a .msh mesh format
+
+    Parameters:
+    -----------
+    input_file : str
+        Path to the gmsh file (GmshFileName)
+
+    Returns:
+    --------
+    2 Meshes 
+        A surface mesh (tri.xdmf) object and a volumetric mesh (tetra.xdmf) object.
+
+    """
+
+
 import meshio
 import os
 

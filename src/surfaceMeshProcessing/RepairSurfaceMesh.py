@@ -1,3 +1,18 @@
+"""
+    Generates a watertight surface mesh from a corrupt surface mesh
+
+    Parameters:
+    -----------
+    input_file : str 
+        Path to the corrupt surface mesh 
+
+    Returns:
+    --------
+    a watertight surface mesh
+        All the holes that were created after the smoothing step are closed and fixed.
+
+    """
+
 import trimesh
 import pymeshfix
 import os
