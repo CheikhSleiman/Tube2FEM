@@ -6,10 +6,11 @@ function combineScripts
 %   INPUTS:
 %       'NavierStokesTimeDependent_beforeBC.py' - generic FEniCS script before BC block 
 %       'NavierStokesTimeDependent_afterBC.py' - generic FEniCS script after BC block
-%       'BC.txt' - problem-specific FEniCS-compatible BC syntax
+%       ''
 %
 %   OUTPUT:
-%       'combinedNavierStokes.py' - A single ready-to-use FEniCS script
+%       Two textfiles containing the surface mesh nodes and surface mesh
+%       nodal field values, respectively.
 %
 % -----------------------------------------------------------------------%
 
