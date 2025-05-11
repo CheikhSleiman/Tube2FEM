@@ -90,4 +90,22 @@ while 1
         break
     end
 end
+% labelled surfaces should at least have 10 elements, orelse they are
+% defects and therefore joined to wall surface
+[GC,GR] = groupcounts(Cc);
+for i=1:size(GC,1)
+    if GC(i) <10
+        indGC = find(Cc==i);
+        Cc(indGC)=ones(size(indGC,1),1);
+    end
+end
+
+[GC,GR] = groupcounts(Cc);
+for i = 1:size(GR,1)
+    indGR = find(Cc==GR(i));
+    Cc(indGR)=i*ones(size(indGR,1),1);
+end
+
+% patch('faces',F,'vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',0.2,'EdgeColor','none');
+
 end
