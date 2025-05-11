@@ -9,18 +9,16 @@ function ExportBCs(FEFolder,Vsurf,oxygenSurf)
 %   (in the paper it is an oxygen field).
 %   
 %   INPUTS:
-%       FEFolder - string, FE directory
-%       Vsurf - matrix, surface mesh nodes
-%       oxygenSurf - column vector, surface mesh field values
+%       meshOutput  - struct, meshOutput from TetGen
+%       Fc - matrix, surface mesh faces
+%       Vc - matrix, surface mesh nodes
 %
 %   OUTPUT:
-%       Two textfiles containing the surface mesh nodes and surface mesh
-%       nodal field values, respectively.
+%       Textfile containing FEniCS compatible BC syntax
 %
 % -----------------------------------------------------------------------%
 
 
-% Create the two text files
 fileName1 = strcat(FEFolder,'\BC_points.txt');
 fileName2 = strcat(FEFolder,'\BC_values.txt');
 fid1 = fopen(fileName1,'wt');
@@ -43,6 +41,6 @@ for i = 1:row
     end
 end
 
-% Close the files
+% Close the file
 fclose(fid1);
 fclose(fid2);
