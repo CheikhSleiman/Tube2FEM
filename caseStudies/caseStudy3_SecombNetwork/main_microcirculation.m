@@ -118,7 +118,7 @@ axis off
 drawnow; 
 
 %% Create Binary Image from Graph
-binaryNetwork = binaryImageFromGraph(data); 
+binaryNetwork = binaryImageFromGraph(data,1); 
 v= volshow(binaryNetwork);
 
 %% Dilate Binary Image
