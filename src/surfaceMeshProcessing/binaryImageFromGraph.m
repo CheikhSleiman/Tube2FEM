@@ -1,4 +1,4 @@
-function [ImBinary] = binaryImageFromGraph(data)
+function [ImBinary] = binaryImageFromGraph(data,voxelSize)
 % binaryImageFromGraph generate a binary image from a synthetic or
 % skeletonised graph (presented by the secomb format)
 %
@@ -8,7 +8,7 @@ function [ImBinary] = binaryImageFromGraph(data)
 %
 %   INPUTS:
 %       data - matrix, graph in Secomb format 
-%
+%       voxelSize - float, voxel size value
 %   OUTPUT:
 %       ImBinary - 3D matrix, 3D binary image of the graph
 %       
@@ -16,26 +16,25 @@ function [ImBinary] = binaryImageFromGraph(data)
 % -----------------------------------------------------------------------%
 
 
-% colour map
+
 a = linspace(0,1);
 b = zeros(1,100);
 c = zeros(1,100);
 myMap = [a' b' c'];
 
-% Defone the boundary of the domain
-maxX = 50*(ceil(max(data(:,7))/50.)+1);
-maxY = 50*(ceil(max(data(:,8))/50.)+1);
-maxZ = 50*(ceil(max(data(:,9))/50.)+1);
+maxX = 10*(ceil(max(data(:,7))/10.)+1);
+maxY = 10*(ceil(max(data(:,8))/10.)+1);
+maxZ = 10*(ceil(max(data(:,9))/10.)+1);
 
-% Define the 3D image size
+
 ImBinary = zeros(maxX,maxY,maxZ);
-% Define the pixelSize
-pixelSize = 1;
-x = [0:pixelSize:size(ImBinary,1)];
-y = [0:pixelSize:size(ImBinary,2)];
-z = [0:pixelSize:size(ImBinary,3)];
 
-% Loop over each segment from the graph
+x = [0:voxelSize:size(ImBinary,1)];
+y = [0:voxelSize:size(ImBinary,2)];
+z = [0:voxelSize:size(ImBinary,3)];
+
+cFigure
+
 for i = 1:size(data,1)
      startNode = data(i,3);
      endNode  = data(i,4);
@@ -45,26 +44,31 @@ for i = 1:size(data,1)
      endNodeCoor = [data(i,10) data(i,11) data(i,12)];
      line([startNodeCoor(1) endNodeCoor(1)],[startNodeCoor(2) endNodeCoor(2)],[startNodeCoor(3) endNodeCoor(3)])     
 
-     
+
      lineVec = endNodeCoor - startNodeCoor;
      quiver3(startNodeCoor(1),startNodeCoor(2),startNodeCoor(3),lineVec(1),lineVec(2),lineVec(3),'k','LineWidth',(20*barRadius/100),'ShowArrowHead','off')
      hold on
      grid on
-     % projection of the segment on the XY and XZ planes
      lineVecXY = [lineVec(1) lineVec(2) 0];
      lineVecXZ = [lineVec(1) 0 lineVec(3)];
 
      %Plot perpendicular vector to lineVecXY
-     lineVecXYperp = find_perp(lineVecXY);
-     lineVecXYperp = [lineVecXYperp(1) lineVecXYperp(2) 0];
-     %Angles calculation
-     vx = [1 0 0];
-     CosTheta = max(min(dot(lineVecXY,vx)/(norm(lineVecXY)*norm(vx)),1),-1);
-     ThetaXInDegrees = real(acosd(CosTheta));
-     vz = [0 0 1];
-     CosTheta = max(min(dot(lineVec,vz)/(norm(lineVec)*norm(vz)),1),-1);
-     ThetaZInDegrees = real(acosd(CosTheta));
-
+     if sum(lineVecXY ~= 0) == 0
+        lineVecXYperp = [1 0 0];
+        % ThetaXInDegrees = 0
+        % ThetaZInDegrees = -90
+     else
+        lineVecXYperp = find_perp(lineVecXY);
+        lineVecXYperp = [lineVecXYperp(1) lineVecXYperp(2) 0];
+        
+     end
+        %Angles calculation
+        vx = [1 0 0];
+        CosTheta = max(min(dot(lineVecXY,vx)/(norm(lineVecXY)*norm(vx)),1),-1);
+        ThetaXInDegrees = real(acosd(CosTheta));
+        vz = [0 0 1];
+        CosTheta = max(min(dot(lineVec,vz)/(norm(lineVec)*norm(vz)),1),-1);
+        ThetaZInDegrees = real(acosd(CosTheta));
      % Create Cylinder
      [X,Y,Z] = cylinder(barRadius); % use cylinder(barRadius,12) to fasten it up
      Z = Z*barLength;
@@ -82,27 +86,27 @@ xmax = max(max(hm.XData));
 ymax = max(max(hm.YData));
 zmax = max(max(hm.ZData));
       
-imin = find(x < round(xmin,2)-pixelSize);
+imin = find(x < round(xmin,2)-voxelSize);
 imin = max(imin);
-imax = find(x > round(xmax,2)+pixelSize);
+imax = find(x > round(xmax,2)+voxelSize);
 imax = min(imax);
 
-jmin = find(y < round(ymin,2)-pixelSize);
+jmin = find(y < round(ymin,2)-voxelSize);
 jmin = max(jmin);
-jmax = find(y > round(ymax,2)+pixelSize);
+jmax = find(y > round(ymax,2)+voxelSize);
 jmax = min(jmax);
 
-kmin = find(z < round(zmin,2)-pixelSize);
+kmin = find(z < round(zmin,2)-voxelSize);
 kmin = max(kmin);
-kmax = find(z > round(zmax,2)+pixelSize);
+kmax = find(z > round(zmax,2)+voxelSize);
 kmax = min(kmax);
       
-% point in cylinder: dist(P,cylinderAxis)<R + dist(Q,centerOfCylAxis)<barLength/2, Q being the projection of P on CylAxis
+% % point in cylinder: dist(P,cylinderAxis)<R + dist(Q,centerOfCylAxis)<barLength/2, Q being the projection of P on CylAxis --- Validation in PointInCyliner.m file
 m1 = cross(startNodeCoor,endNodeCoor);
 midPt = (startNodeCoor+endNodeCoor)/2;
 
 threshRadius = 1;
-% Change voxel value from 0 to 255 if inside cylinder
+
 for i =imin:imax
     for j =jmin:jmax
         for k = kmin:kmax
@@ -123,7 +127,6 @@ end
 
 end
 
-% Plot
 set(gca,'xdir','reverse','zdir','reverse')
 xlim([0 maxX])
 ylim([0 maxY])
@@ -133,7 +136,7 @@ ylabel('y [\mum]')
 zlabel('z [\mum]')
 colormap(myMap)
 minRadius = min(data(:,5));
-caxis([minRadius, maxRadius])
+% caxis([minRadius, maxRadius])
 c = colorbar;
 c.Label.String = 'Vessel diameter [\mum]';
 hold on
@@ -169,22 +172,21 @@ for i = 1:size(data,1)
       ymax = max(max(hm.YData));
       zmax = max(max(hm.ZData));
       
-      imin = find(x < round(xmin,2)-pixelSize);
+      imin = find(x < round(xmin,2)-voxelSize);
       imin = max(imin);
-      imax = find(x > round(xmax,2)+pixelSize);
+      imax = find(x > round(xmax,2)+voxelSize);
       imax = min(imax);
 
-      jmin = find(y < round(ymin,2)-pixelSize);
+      jmin = find(y < round(ymin,2)-voxelSize);
       jmin = max(jmin);
-      jmax = find(y > round(ymax,2)+pixelSize);
+      jmax = find(y > round(ymax,2)+voxelSize);
       jmax = min(jmax);
 
-      kmin = find(z < round(zmin,2)-pixelSize);
+      kmin = find(z < round(zmin,2)-voxelSize);
       kmin = max(kmin);
-      kmax = find(z > round(zmax,2)+pixelSize);
+      kmax = find(z > round(zmax,2)+voxelSize);
       kmax = min(kmax);
       
-      %Change voxel value from 0 to 255 if inside sphere
         for i =imin:imax
             for j =jmin:jmax
                 for k = kmin:kmax
@@ -209,19 +211,19 @@ for i = 1:size(data,1)
       ymax2 = max(max(hm2.YData));
       zmax2 = max(max(hm2.ZData));
       
-      imin2 = find(x < round(xmin2,2)-pixelSize);
+      imin2 = find(x < round(xmin2,2)-voxelSize);
       imin2 = max(imin2);
-      imax2 = find(x > round(xmax2,2)+pixelSize);
+      imax2 = find(x > round(xmax2,2)+voxelSize);
       imax2 = min(imax2);
 
-      jmin2 = find(y < round(ymin2,2)-pixelSize);
+      jmin2 = find(y < round(ymin2,2)-voxelSize);
       jmin2 = max(jmin2);
-      jmax2 = find(y > round(ymax2,2)+pixelSize);
+      jmax2 = find(y > round(ymax2,2)+voxelSize);
       jmax2 = min(jmax2);
 
-      kmin2 = find(z < round(zmin2,2)-pixelSize);
+      kmin2 = find(z < round(zmin2,2)-voxelSize);
       kmin2 = max(kmin2);
-      kmax2 = find(z > round(zmax2,2)+pixelSize);
+      kmax2 = find(z > round(zmax2,2)+voxelSize);
       kmax2 = min(kmax2);
 
         for i =imin2:imax2
