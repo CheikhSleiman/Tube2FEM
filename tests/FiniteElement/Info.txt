@@ -1,0 +1,6 @@
+tetraFileName="../../../../../../../../../../../../../../../../../mnt/c/Users/homeuser/Documents/GitHub/Tube2FEM/tests/Mesh/Tetra.xdmf"
+triFileName="../../../../../../../../../../../../../../../../../mnt/c/Users/homeuser/Documents/GitHub/Tube2FEM/tests/Mesh/Tri.xdmf"
+fileName='../../../../../../../../../../../../../../../../../mnt/c/Users/homeuser/Documents/GitHub/Tube2FEM/tests/simOutput_3D/velocity.pvd'
+fileName1='../../../../../../../../../../../../../../../../../mnt/c/Users/homeuser/Documents/GitHub/Tube2FEM/tests/simOutput_3D/pressure.pvd'
+fileName2='../../../../../../../../../../../../../../../../../mnt/c/Users/homeuser/Documents/GitHub/Tube2FEM/tests/simOutput_3D/wss.pvd'
+timeSeriesFileName='../../../../../../../../../../../../../../../../../mnt/c/Users/homeuser/Documents/GitHub/Tube2FEM/tests/simOutput_3D/velocity_series'

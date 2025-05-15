@@ -1,0 +1,2 @@
+velPath="C:/Users/homeuser/Documents/GitHub/Tube2FEM/tests/simOutput_3D/velocity.pvd"
+postPath='C:/Users/homeuser/Documents/GitHub/Tube2FEM/tests/Postprocessing/velocity.mp4'

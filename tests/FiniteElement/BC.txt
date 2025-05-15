@@ -1,0 +1,10 @@
+u_in = Expression('-0.025*t', degree = 1, t=0)
+
+p_out = Expression('0*t', degree = 1, t=0)
+
+bcp_outflow2 = DirichletBC(Q, p_out, surf_markers, 2)
+
+bcu_walls     = DirichletBC(V, Constant((0, 0, 0)),surf_markers, 1)
+bcu_inflow1    = DirichletBC(V.sub(2), u_in , surf_markers, 3)
+bcu = [bcu_walls,bcu_inflow1]
+bcp =[bcp_outflow2]
